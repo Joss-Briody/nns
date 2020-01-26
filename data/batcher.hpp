@@ -8,18 +8,8 @@
 
 #include <math.h>
 
-template <typename T>
-void shuffleByIndex(std::vector<T> &v, std::vector<unsigned int> indices)
-{
-    for (size_t i = 0; i < v.size(); ++i)
-    {
-        std::swap(v[i], v[indices[i]]);
-    }
-}
-
 template <typename Dataset>
-class BatchLoader
-{
+class BatchLoader {
 private:
     std::shared_ptr<Dataset> dataset;
     int currentEpoch;
@@ -29,7 +19,18 @@ private:
 public:
     BatchLoader(std::unique_ptr<Dataset> &&dataset_) : dataset{std::move(dataset_)} {}
     std::shared_ptr<Dataset> getDataset(){return dataset;}
-    void shuffleTrain();
+    void shuffleTrain() {
+        std::vector<unsigned int> indexes(dataset->training_images.size());
+        std::iota(indexes.begin(), indexes.end(), 0);
+        std::random_device rng;
+        std::mt19937 urng(rng());
+        std::shuffle(indexes.begin(), indexes.end(), urng);
+        for (size_t i = 0; i < dataset->training_images.size(); ++i)
+        {
+            std::swap(dataset->training_images[i], dataset->training_images[indexes[i]]);
+            std::swap(dataset->training_labels[i], dataset->training_labels[indexes[i]]);
+        }
+    }
     void sampleTrainBatch();
     void sampleTrain();
     void sampleTestBatch();
@@ -37,18 +38,6 @@ public:
     int getBatchSize();
 
 };
-
-template <typename Dataset>
-void BatchLoader<Dataset>::shuffleTrain() {
-    std::vector<unsigned int> indexes(dataset->training_images.size());
-    std::iota(indexes.begin(), indexes.end(), 0);
-    std::random_device rng;
-    std::mt19937 urng(rng());
-    std::shuffle(indexes.begin(), indexes.end(), urng);
-    // shuffle the images and labels in same way
-    shuffleByIndex(dataset->training_images, indexes);
-    shuffleByIndex(dataset->training_labels, indexes);
-}
 
 template <typename Container>
 void printMax(Container& values) {
