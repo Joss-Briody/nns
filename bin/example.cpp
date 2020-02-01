@@ -1,14 +1,13 @@
 #include <iostream>
 #include <vector>
 
-#include "data/mnist_reader.hpp"
-#include "data/batcher.hpp"
+#include "include/data/mnist.hpp"
+#include "include/data/batcher.hpp"
 
-typedef mnist::MnistDataset<uint8_t, uint8_t> Data;
+typedef mnist::Mnist<uint8_t, uint8_t> Data;
 
 int main(int argc, char* argv[]) {
     // load the mnist data
-  
     BatchLoader<Data> batchLoader = BatchLoader<Data>(
         mnist::MnistReader<uint8_t, uint8_t>()
         .withBaseDirectory("/Users/Joss/Desktop/nns/mnist")

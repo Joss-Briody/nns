@@ -7,57 +7,20 @@
 #include <fstream>
 #include <stdexcept>
 
-#include "include/data/mnist_reader.hpp"
+#include "include/data/mnist.hpp"
+#include "include/data/io_utils.hpp"
 
 namespace mnist {
-
-bool fileExists(const std::string &fileName)
-{
-    std::ifstream f(fileName.c_str());
-    return f.good();
-}
-
-void checkFileExists(const std::string &name)
-{
-    if (!fileExists(name))
-    {
-        throw std::invalid_argument("File does not exists: " + name);
-    }
-}
-
-inline uint32_t readHeader(const std::unique_ptr<char[]> &buffer, size_t position)
-{
-    auto header = reinterpret_cast<uint32_t *>(buffer.get());
-    auto value = *(header + position);
-    return (value << 24) | ((value << 8) & 0x00FF0000) | ((value >> 8) & 0X0000FF00) | (value >> 24);
-}
-
-inline std::unique_ptr<char[]> readBinaryFile(const std::string &path)
-{
-    std::ifstream f;
-    f.open(path, std::ios::in | std::ios::binary | std::ios::ate);
-    if (!f) {
-        std::cout << "Error opening file" << std::endl;
-        return {};
-    }
-    auto size = f.tellg();
-    std::unique_ptr<char[]> buffer(new char[size]);
-
-    f.seekg(0, std::ios::beg);
-    f.read(buffer.get(), size);
-    f.close();
-    return buffer;
-}
 
 template <typename Pixel>
 std::vector<std::vector<Pixel>> readImages(const std::string &name)
 {
-    auto buffer = readBinaryFile(name);
+    auto buffer = io::readBinaryFile(name);
     if (buffer)
     {
-        auto count = readHeader(buffer, 1);
-        auto rows = readHeader(buffer, 2);
-        auto columns = readHeader(buffer, 3);
+        auto count = io::readHeader(buffer, 1);
+        auto rows = io::readHeader(buffer, 2);
+        auto columns = io::readHeader(buffer, 3);
         auto image_buffer = reinterpret_cast<unsigned char *>(buffer.get() + 16);
         std::vector<std::vector<Pixel>> images;
         images.reserve(count);
@@ -78,10 +41,10 @@ std::vector<std::vector<Pixel>> readImages(const std::string &name)
 template <typename Label>
 std::vector<Label> readLabels(const std::string &name)
 {
-    auto buffer = readBinaryFile(name);
+    auto buffer = io::readBinaryFile(name);
     if (buffer)
     {
-        auto count = readHeader(buffer, 1);
+        auto count = io::readHeader(buffer, 1);
         auto label_buffer = reinterpret_cast<unsigned char *>(buffer.get() + 8);
         std::vector<Label> labels(count);
         labels.reserve(count);
@@ -96,7 +59,7 @@ std::vector<Label> readLabels(const std::string &name)
 }
 
 template <typename Pixel, typename Label>
-void MnistDataset<Pixel, Label>::binarize(const double &threshold) 
+void Mnist<Pixel, Label>::binarize(const double &threshold) 
 {
     auto binarize_images = [&threshold](std::vector<Pixel> &image) {
         for (auto &v : image)
@@ -109,7 +72,7 @@ void MnistDataset<Pixel, Label>::binarize(const double &threshold)
 }
 
 template <typename Pixel, typename Label>
-std::pair<std::vector<std::vector<Pixel>>, std::vector<Label>> MnistDataset<Pixel, Label>::getTrainingHead()
+std::pair<std::vector<std::vector<Pixel>>, std::vector<Label>> Mnist<Pixel, Label>::getTrainingHead()
 {
     std::vector<std::vector<Pixel>> tmpImages(10);
     std::vector<Label> tmpLabels(10);
@@ -131,8 +94,8 @@ MnistReader<Pixel, Label> MnistReader<Pixel, Label>::withTrainFiles(const std::s
 {
     trainImagesFilePath = folder + "/" + trainImages;
     trainLabelsFilePath = folder + "/" + trainLabels;
-    checkFileExists(trainImagesFilePath);
-    checkFileExists(trainLabelsFilePath);
+    io::checkFileExists(trainImagesFilePath);
+    io::checkFileExists(trainLabelsFilePath);
     return *this;
 }
 
@@ -141,15 +104,15 @@ MnistReader<Pixel, Label> MnistReader<Pixel, Label>::withTestFiles(const std::st
 {
     testImagesFilePath = folder + "/" + testImages;
     testLabelsFilePath = folder + "/" + testLabels;
-    checkFileExists(testImagesFilePath);
-    checkFileExists(testLabelsFilePath);
+    io::checkFileExists(testImagesFilePath);
+    io::checkFileExists(testLabelsFilePath);
     return *this;
 }
 
 template <typename Pixel, typename Label>
-std::unique_ptr<MnistDataset<Pixel, Label>> MnistReader<Pixel, Label>::read()
+std::unique_ptr<Mnist<Pixel, Label>> MnistReader<Pixel, Label>::read()
 {
-    MnistDataset<Pixel, Label> data;
+    Mnist<Pixel, Label> data;
     data.training_images = readImages<Pixel>(trainImagesFilePath);
     data.training_labels = readLabels<Label>(trainLabelsFilePath);
     data.test_images = readImages<Pixel>(testImagesFilePath);
@@ -158,7 +121,7 @@ std::unique_ptr<MnistDataset<Pixel, Label>> MnistReader<Pixel, Label>::read()
     std::cout << "Nbr of training labels = " << data.training_labels.size() << std::endl;
     std::cout << "Nbr of test images = " << data.test_images.size() << std::endl;
     std::cout << "Nbr of test labels = " << data.test_labels.size() << std::endl;
-    return std::make_unique<MnistDataset<Pixel, Label>>(data);
+    return std::make_unique<Mnist<Pixel, Label>>(data);
 }
 
 } // namespace mnist
