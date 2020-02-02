@@ -117,10 +117,6 @@ std::unique_ptr<Mnist<Pixel, Label>> MnistReader<Pixel, Label>::read()
     data.training_labels = readLabels<Label>(trainLabelsFilePath);
     data.test_images = readImages<Pixel>(testImagesFilePath);
     data.test_labels = readLabels<Label>(testLabelsFilePath);
-    std::cout << "Nbr of training images = " << data.training_images.size() << std::endl;
-    std::cout << "Nbr of training labels = " << data.training_labels.size() << std::endl;
-    std::cout << "Nbr of test images = " << data.test_images.size() << std::endl;
-    std::cout << "Nbr of test labels = " << data.test_labels.size() << std::endl;
     return std::make_unique<Mnist<Pixel, Label>>(data);
 }
 
