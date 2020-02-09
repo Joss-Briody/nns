@@ -55,7 +55,7 @@ class RandomSampler {
     size_t thisBatchSize = batchMappings[i].size();
     Container batch(thisBatchSize);
     for (size_t j = 0; j < thisBatchSize; ++j) {
-      batch[j] = dataset[batchMappings[i][j]];
+      batch[j] = dataset[indexes[batchMappings[i][j]]];
     }
     return batch;
   }
