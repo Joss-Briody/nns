@@ -5,8 +5,8 @@
 #include <utility>
 #include <math.h>
 
-#ifndef _DATASET_H
-#define _DATASET_H
+#ifndef _BATCHER_H
+#define _BATCHER_H
 
 template <typename Dataset>
 class BatchLoader {

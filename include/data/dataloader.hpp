@@ -1,47 +1,34 @@
 #include <iostream>
+#include <vector>
+#include <utility>
+#include "include/data/sampler.hpp"
+#include "include/data/iterator.hpp"
 
 #ifndef _DATALOADER_H
 #define _DATALOADER_H
 
-namespace dataloader  {
+using UPairRecord = std::pair<std::vector<uint8_t>, size_t>;
+using UPairContainer = std::vector<UPairRecord>;
+using UPairSampler = sampler::RandomSampler<UPairRecord, UPairContainer>;
+using UPairIterable = iterator::Iterable<UPairRecord, UPairSampler>;
 
-    template <typename Dataset, typename Record>
-    class _DataIterator {
-        Dataset &data;
-        size_t counter{0};
 
-    public:
-        constexpr _DataIterator() = default;
-        constexpr _DataIterator(Dataset &data_) : data(data_), counter(0) {}
-        constexpr _DataIterator(Dataset &data_, size_t i) : data(data_), counter(i) {}
+namespace dataloader {
 
-        constexpr _DataIterator &operator++() {
-            counter++;
-            return *this;
-        }
+// using FPairRecord = std::pair<std::vector<float>, size_t>;
+// using FPairContainer = std::vector<FPairRecord>;
+// using FPairSampler = sampler::RandomSampler<FPairRecord, FPairContainer>;
+// using FPairIterable = iterator::Iterable<FPairRecord, FPairSampler>;
 
-        Record &operator*() const {
-            return data[counter];
-        }
+class VectorDataLoader : public UPairIterable {
+ public:
+  constexpr VectorDataLoader(UPairSampler& sampler_)
+      : UPairIterable(sampler_, 0, sampler_.size()) {}
+  
+//   constexpr VectorDataLoader(FPairSampler& sampler_)
+//       : FPairIterable(sampler_, 0, sampler_.size()) {}
+};
 
-        bool operator!=(const _DataIterator &o) {
-            return counter != o.counter;
-        }
-    };
+}  // namespace dataloader
 
-    template <typename Dataset, typename Record>
-    class DataLoader {
-        Dataset& dataset;
-        _DataIterator<Dataset, Record> begin_it;
-        size_t end_n;
-
-        public:
-            constexpr DataLoader(Dataset&, size_t, size_t);
-            _DataIterator<Dataset, Record> begin() const;
-            _DataIterator<Dataset, Record> end() const;
-    };
-
-} // namespace dataloader
-
-#include "src/data/dataloader.tpp"
 #endif
