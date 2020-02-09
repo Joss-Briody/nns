@@ -7,10 +7,10 @@
 #ifndef _DATALOADER_H
 #define _DATALOADER_H
 
-using UPairRecord = std::pair<std::vector<uint8_t>, size_t>;
-using UPairContainer = std::vector<UPairRecord>;
-using UPairSampler = sampler::RandomSampler<UPairRecord, UPairContainer>;
-using UPairIterable = iterator::Iterable<UPairRecord, UPairSampler>;
+using PairRecord = std::pair<std::vector<uint8_t>, size_t>;
+using PairContainer = std::vector<PairRecord>;
+using PairSampler = sampler::RandomSampler<PairRecord, PairContainer>;
+using PairIterable = iterator::BatchIterable<PairRecord, PairSampler>;
 
 
 namespace dataloader {
@@ -20,10 +20,10 @@ namespace dataloader {
 // using FPairSampler = sampler::RandomSampler<FPairRecord, FPairContainer>;
 // using FPairIterable = iterator::Iterable<FPairRecord, FPairSampler>;
 
-class VectorDataLoader : public UPairIterable {
+class VectorDataLoader : public PairIterable {
  public:
-  constexpr VectorDataLoader(UPairSampler& sampler_)
-      : UPairIterable(sampler_, 0, sampler_.size()) {}
+  constexpr VectorDataLoader(PairSampler& sampler_)
+      : PairIterable(sampler_, 0, sampler_.size()) {}
   
 //   constexpr VectorDataLoader(FPairSampler& sampler_)
 //       : FPairIterable(sampler_, 0, sampler_.size()) {}

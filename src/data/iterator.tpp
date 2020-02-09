@@ -13,6 +13,17 @@ constexpr Iterator<Record, Container> iteratorAt(Container& container,
   }
   return it;
 }
+
+template <typename Record, typename Container>
+constexpr BatchIterator<Record, Container> batchIteratorAt(Container& container,
+                                                 size_t n) {
+  BatchIterator<Record, Container> it(container);
+  for (size_t i = 0; i < n; ++i) {
+    ++it;
+  }
+  return it;
+}
+
 template <typename Record, typename Container>
 constexpr Iterable<Record, Container>::Iterable(Container& container_,
                                                 size_t begin_, size_t end_)
@@ -21,11 +32,29 @@ constexpr Iterable<Record, Container>::Iterable(Container& container_,
       container{container_} {}
 
 template <typename Record, typename Container>
+constexpr BatchIterable<Record, Container>::BatchIterable(Container& container_,
+                                                size_t begin_, size_t end_)
+    : beginIt{batchIteratorAt<Record, Container>(container_, begin_)},
+      end_n{end_},
+      container{container_} {}
+
+template <typename Record, typename Container>
 Iterator<Record, Container> Iterable<Record, Container>::begin() const {
   return beginIt;
+
 }
+template <typename Record, typename Container>
+BatchIterator<Record, Container> BatchIterable<Record, Container>::begin() const {
+  return beginIt;
+}
+
 template <typename Record, typename Container>
 Iterator<Record, Container> Iterable<Record, Container>::end() const {
   return Iterator<Record, Container>{container, end_n};
+}
+
+template <typename Record, typename Container>
+BatchIterator<Record, Container> BatchIterable<Record, Container>::end() const {
+  return BatchIterator<Record, Container>{container, end_n};
 }
 }
