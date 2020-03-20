@@ -15,10 +15,12 @@ int main(int argc, char* argv[]) {
     typedef std::vector<Record> VectorContainer;
     typedef data::Dataset<Record, VectorContainer> VectorDataset;
 
+    const std::string DATA_DIR = "/Users/test/workspace/nns/dataset";
+
     // load the mnist data
     MnistData data = 
         mnist::MnistReader<uint8_t, uint8_t>()
-        .withBaseDirectory("/Users/Joss/Desktop/nns/mnist")
+        .withBaseDirectory(DATA_DIR)
         .withTrainFiles("train-images-idx3-ubyte", "train-labels-idx1-ubyte")
         .withTestFiles("t10k-images-idx3-ubyte", "t10k-labels-idx1-ubyte")
         .read()
