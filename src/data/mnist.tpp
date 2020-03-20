@@ -65,7 +65,7 @@ Mnist<Pixel, Label>::Mnist(std::vector<std::vector<Pixel>> &&trainImages_,
 }
 
 template <typename Pixel, typename Label>
-Mnist<Pixel, Label> &Mnist<Pixel, Label>::binarize(double threshold) {
+Mnist<Pixel, Label>& Mnist<Pixel, Label>::binarize(double threshold) {
   auto binarize = [&threshold](std::vector<Pixel> &image) {
     for (auto &v : image) {
       v = v > threshold ? 1.0 : 0.0;
@@ -77,14 +77,33 @@ Mnist<Pixel, Label> &Mnist<Pixel, Label>::binarize(double threshold) {
 }
 
 template <typename Pixel, typename Label>
-std::pair<std::vector<std::vector<Pixel>>, std::vector<Label>>
-Mnist<Pixel, Label>::getTrainingHead() {
-  std::vector<std::vector<Pixel>> tmpImages(10);
-  std::vector<Label> tmpLabels(10);
-  std::copy_n(trainImages.begin(), 10, tmpImages.begin());
-  std::copy_n(trainLabels.begin(), 10, tmpLabels.begin());
-  return std::make_pair(tmpImages, tmpLabels);
+std::vector<std::pair<std::vector<Pixel>, Label>> Mnist<Pixel, Label>::getTrainRecords(size_t numRecords) {
+    size_t num = numRecords == 0 ? trainImages.size() : numRecords;
+    std::vector<std::pair<std::vector<Pixel>, Label>> records(num);
+    for(size_t i=0; i<num; ++i) {
+        records[i] = std::make_pair(trainImages[i], trainLabels[i]);
+    }
+    return records;
 }
+
+template <typename Pixel, typename Label>
+std::vector<std::pair<std::vector<Pixel>, Label>> Mnist<Pixel, Label>::getTestRecords() {
+    std::vector<std::pair<std::vector<Pixel>, Label>> records(testImages.size());
+    for(size_t i=0; i<testImages.size(); ++i) {
+        records[i] = std::make_pair(testImages[i], testLabels[i]);
+    }
+    return records;
+}
+
+// template <typename Pixel, typename Label>
+// std::pair<std::vector<std::vector<Pixel>>, std::vector<Label>>
+// Mnist<Pixel, Label>::getTrainingHead() {
+//   std::vector<std::vector<Pixel>> tmpImages(10);
+//   std::vector<Label> tmpLabels(10);
+//   std::copy_n(trainImages.begin(), 10, tmpImages.begin());
+//   std::copy_n(trainLabels.begin(), 10, tmpLabels.begin());
+//   return std::make_pair(tmpImages, tmpLabels);
+// }
 
 template <typename Pixel, typename Label>
 MnistReader<Pixel, Label> &MnistReader<Pixel, Label>::withBaseDirectory(

@@ -8,22 +8,21 @@
 
 TEST_CASE("DataLoader can be iterated", "[dataloader]") {
     typedef std::vector<u_int8_t> x_type;
-    typedef std::pair<x_type, size_t> Record;
+    typedef std::pair<x_type, u_int8_t> Record;
     typedef std::vector<Record> VectorContainer;
     typedef data::Dataset<Record, VectorContainer> VectorDataset;
     VectorContainer data = {
-        std::make_pair<x_type, int>({1, 2, 3}, 1),
-        std::make_pair<x_type, int>({4, 5, 6}, 2),
-        std::make_pair<x_type, int>({1, 2, 3}, 3),
-        std::make_pair<x_type, int>({4, 5, 6}, 4),
-        std::make_pair<x_type, int>({1, 2, 3}, 5),
-        std::make_pair<x_type, int>({4, 5, 6}, 6),
+        std::make_pair<x_type, u_int8_t>({1, 2, 3}, 1),
+        std::make_pair<x_type, u_int8_t>({4, 5, 6}, 2),
+        std::make_pair<x_type, u_int8_t>({1, 2, 3}, 3),
+        std::make_pair<x_type, u_int8_t>({4, 5, 6}, 4),
+        std::make_pair<x_type, u_int8_t>({1, 2, 3}, 5),
+        std::make_pair<x_type, u_int8_t>({4, 5, 6}, 6),
     };
     std::unordered_map<u_int8_t, x_type> expected;
     for(const auto& item: data) {
         expected[item.second] = item.first;
     }
-
     VectorDataset dataset(data);
     sampler::RandomSampler<Record, VectorContainer> sampler(dataset, 3);
     dataloader::VectorDataLoader dataLoader(sampler);

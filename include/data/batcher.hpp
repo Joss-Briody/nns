@@ -34,5 +34,9 @@ template <typename T, typename V>
 void printArrays(std::pair<std::vector<std::vector<T>>, std::vector<V>> &&values);
 
 
+template <typename T, typename V>
+void printRecords(const std::vector<std::pair<std::vector<T>, V>> &records);
+
+
 #include "src/data/batcher.tpp"
 #endif

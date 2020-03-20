@@ -58,4 +58,20 @@ void printArrays(std::pair<std::vector<std::vector<T>>, std::vector<V>> &&values
                   [](const V &v) { std::cout << std::to_string(v) << std::endl; });
 }
 
-// template class BatchLoader<int>;
+template <typename T, typename V>
+void printRecords(const std::vector<std::pair<std::vector<T>, V>> &records) {
+    auto printIm = [](const std::pair<std::vector<T>, V> &v) {
+        std::cout << "\t" << std::to_string(v.second) << std::endl;
+        unsigned int dim = sqrt(v.first.size());
+        for (size_t i = 0; i < v.first.size(); ++i) {
+            if (i % dim == 0) {
+                std::cout << std::endl;
+            }
+            auto s = v.first[i] == 1 ? "X" : ".";
+            std::string ch(s);
+            std::cout << ch << " ";
+        }
+    };
+    std::for_each(records.begin(), records.end(), printIm);
+    // std::cout << std::to_string(record.second) << std::endl; 
+}

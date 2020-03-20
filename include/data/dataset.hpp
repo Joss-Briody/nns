@@ -8,9 +8,11 @@ namespace data {
     template <typename Record, typename Container>
     class Dataset {
         Container records;
+    
         public:
             Dataset(Container& records_): records(records_) {}
-            
+            Dataset(Container&& records_): records(std::move(records_)) {}
+
             size_t size() {
                 return records.size();
             }

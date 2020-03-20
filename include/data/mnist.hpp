@@ -37,7 +37,10 @@ struct Mnist {
 
   Mnist<Pixel, Label>& binarize(double threshold = 30);
 
-  std::pair<Images<Pixel>, Labels<Label>> getTrainingHead();
+  std::vector<std::pair<std::vector<Pixel>, Label>> getTrainRecords(size_t numRecords=0);
+  std::vector<std::pair<std::vector<Pixel>, Label>> getTestRecords();
+
+//   std::pair<Images<Pixel>, Labels<Label>> getTrainingHead();
 };
 
 template <typename Pixel, typename Label>

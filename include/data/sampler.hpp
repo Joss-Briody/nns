@@ -1,6 +1,8 @@
 #include <iostream>
 #include <algorithm>
 #include <unordered_map>
+#include <numeric>
+#include <random>
 #include <math.h>
 
 #include "include/data/dataset.hpp"
@@ -20,7 +22,7 @@ std::vector<size_t> createIndices(size_t datasetSize) {
 };
 
 std::unordered_map<size_t, std::vector<size_t>> createBatchMappings(
-    size_t batchSize, size_t datasetSize) {
+  size_t batchSize, size_t datasetSize) {
   size_t begin = 0;
   size_t end = std::min(batchSize, datasetSize);
   size_t numBatches = ceil(datasetSize / (double)batchSize);
